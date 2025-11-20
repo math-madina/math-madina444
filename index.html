@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<title>Math Madina</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f6fa;
+    display: flex;
+    flex-direction: row;
+}
+
+/* Сол жақ меню */
+.sidebar {
+    width: 240px;
+    background: #1f2d3a;
+    color: white;
+    height: 100vh;
+    padding-top: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+.sidebar h2 {
+    text-align: center;
+    margin: 0 0 20px 0;
+    font-size: 20px;
+}
+.sidebar button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    background: none;
+    color: white;
+    cursor: pointer;
+    text-align: left;
+    padding-left: 20px;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+.sidebar button:hover {
+    background: #2e4256;
+}
+
+/* Негізгі бет бөлігі */
+.main {
+    margin-left: 260px;
+    padding: 20px;
+    width: calc(100% - 260px);
+    transition: margin 0.3s ease;
+}
+
+h1 {
+    color: #233040;
+}
+
+/* Контейнерлер */
+.hidden {
+    display: none;
+}
+
+/* Cards */
+.card {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+
+.term-image {
+    width: 100%;
+    max-width: 140px;
+    height: 80px;
+    background: #e5e8ec;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius:6px;
+    margin-top: 8px;
+}
+
+/* Сәйкестендіру */
+.match-box {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.match-col {
+    flex: 1;
+    min-width: 140px;
+}
+.match-col button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor:pointer;
+    margin-bottom: 8px;
+    white-space: normal;
+    word-wrap: break-word;
+    transition: background 0.2s, transform 0.1s;
+}
+.match-col button:hover {
+    background: #dfe9ff;
+    transform: translateY(-1px);
+}
+
+/* Тест */
+.test-option {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    margin-bottom: 8px;
+    text-align:left;
+    transition: background 0.2s, transform 0.1s;
+}
+.test-option:hover {
+    background: #dfe9ff;
+    transform: translateY(-1px);
+}
+
+/* Progress bar */
+#progress-container {
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    height: 20px;
+}
+#progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #4caf50;
+    text-align: center;
+    color: white;
+    line-height: 20px;
+    font-size: 12px;
+}
+
+/* Search */
+#search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* ======== Мобильді үйлесімділік ======== */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 10px;
+    }
+    .match-box {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .match-col {
+        flex: 1 1 48%;
+        min-width: 120px;
+    }
+    .term-image {
+        max-width: 100%;
+        height: auto;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Math Madina</h2>
+    <button onclick="showSection('dict')">📘 Сөздік</button>
+    <button onclick="showSection('match')">🧩 Сәйкестендіру</button>
+    <button onclick="showSection('test')">📝 Тест</button>
+</div>
+
+<div class="main">
+
+<!-- ===================== СӨЗДІК ===================== -->
+<div id="dict-section">
+<h1>📘 Математикалық сөздік</h1>
+
+<input type="text" id="search-input" placeholder="Сөзді іздеу...">
+
+<div id="progress-container">
+    <div id="progress-bar">0%</div>
+</div>
+
+<div id="dict-list"></div>
+
+<style>
+#img-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  justify-content: center;
+  align-items: center;
+}
+#img-modal img {
+  max-width: 90%;
+  max-height: 90%;
+}
+</style>
+
+<div id="img-modal">
+  <img id="modal-img" src="">
+</div>
+
+<script>
+/* ================= СӨЗДІК ================= */
+const dictionary = [
+  { 
+    term: "Бірлік кесінді", 
+    definition: "Ұзындығы 1 бірлікке тең кесінді.", 
+    img:"./images/suret.jpg" 
+  },
+  { 
+    term: "Бөлшек", 
+    definition: "Бір бүтіннің бөліктерін санмен көрсету тәсілі.", 
+    img:"./images/suret2.jpg", 
+    audio: "./audio/bolshek.mp4" 
+  },
+  { term: "Ықшамдау", definition: "Өрнекті немесе теңдеуді қарапайым әрі қысқа формаға келтіру процесі.", img:"Сурет 2" },
+  { term: "Үлес", definition: "Бір бүтіннің бөліктерге бөлінген бөлігінің әрқайсысын сипаттайтын ұғым.", img:"Сурет 5" },
+  { term: "Жиек", definition: "Геометриялық фигураның шекарасы немесе қабырғасы.", img:"Сурет 7" },
+  { term: "Бірлік бөлшек(аликвоттық)", definition: "Алымы 1-ге тең, бөлімі 1-ден өзгеше натурал сан болатын бөлшек.", img:"Сурет 8" },
+  { term: "Сыбайлас(бұрыш)", definition: "Бір түйін нүктесінде қосылған және қосындысы 180 градусқа тең болатын екі бұрыш.", img:"Сурет 11" },
+  { term: "Іргелес(бұрыш)", definition: "Бір төбеден шығатын және бір қабырғасы ортақ болатын екі бұрыш.", img:"Сурет 12" },
+  { term: "Қиюшы", definition: "Екі немесе одан да көп геометриялық фигураны қиып өтетін сызық немесе кесінді.", img:"Сурет 13" },
+  { term: "Айқыш(бұрыш)", definition: "Екі түзудің қиылысуынан пайда болатын қарсы тұрған бұрыштар.", img:"Сурет 14" },
+  { term: "Жанама(жанасу нүктесі)", definition: "Шеңбердің жиегі бойымен өтіп тұрған түзу.", img:"Сурет 14" },
+  { term: "Кері сандар", definition: "Берілген санмен көбейткенде 1-ге тең болатын сан.", img:"Сурет 19" },
+  { term: "Қарама-қарсы сандар", definition: "0-ге қатысты бір-біріне қарсы тұрған сандар.", img:"Сурет 20" },
+];
+
+/* ================= ДИКТ РЕНДЕР ================= */
+const dictList = document.getElementById("dict-list");
+const progressBar = document.getElementById("progress-bar");
+let viewedTerms = new Set();
+
+function renderDictionary(filter="") {
+    dictList.innerHTML = "";
+    dictionary.forEach((item,index)=>{
+        if(filter && !item.term.toLowerCase().includes(filter.toLowerCase())) return;
+
+        const div = document.createElement("div");
+        div.className = "card";
+
+        div.innerHTML = `
+          <b>${item.term}</b><br>
+          ${item.definition}
+          ${item.img ? `<div class="term-image"><img src="${item.img}" class="zoomable" style="max-width:100%; height:auto;"></div>` : ""}
+          ${item.audio ? `<audio controls style="width:100%; margin-top:8px;"><source src="${item.audio}"></audio>` : ""}
+        `;
+        div.addEventListener("mouseenter", ()=>{
+            if(!viewedTerms.has(index)){
+                viewedTerms.add(index);
+                updateProgress();
+            }
+        });
+        dictList.appendChild(div);
+    });
+}
+
+function updateProgress(){
+    const percent = Math.round((viewedTerms.size/dictionary.length)*100);
+    progressBar.style.width = percent+"%";
+    progressBar.textContent = percent+"%";
+}
+
+renderDictionary();
+
+document.getElementById("search-input").addEventListener("input",(e)=>{
+    renderDictionary(e.target.value);
+});
+
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("zoomable")) {
+    document.getElementById("modal-img").src = e.target.src;
+    document.getElementById("img-modal").style.display = "flex";
+  }
+  if (e.target.id === "img-modal") {
+    e.target.style.display = "none";
+  }
+});
+</script>
+</div>
+
+<!-- ===================== СӘЙКЕСТЕНДІРУ ===================== -->
+<div id="match-section" class="hidden">
+  <h1>🧩 Сәйкестендіру</h1>
+  <div class="match-box">
+      <div class="match-col" id="match-left"></div>
+      <div class="match-col" id="match-right"></div>
+  </div>
+</div>
+
+<script>
+const matches = [
+  { left: "Бөлшек", right: "Бір бүтіннің бөліктерін санмен көрсету тәсілі" }, 
+  { left: "Бірлік кесінді", right: "Ұзындығы 1 бірлікке тең кесінді" }, 
+  { left: "Ықшамдау", right: "Өрнекті немесе теңдеуді қарапайым әрі қысқа формаға келтіру процесі" }, 
+  { left: "Жиек", right: "Геометриялық фигураның шекарасы немесе қабырғасы" }, 
+  { left: "Үлес", right: "Бір бүтіннің бөліктерге бөлінген бөлігінің әрқайсысын сипаттайтын ұғым" }, 
+  { left: "Бірлік бөлшек(аликвоттық)", right: "Алымы 1-ге тең, бөлімі 1-ден өзгеше натурал сан болатын бөлшек" }, 
+  { left: "Сыбайлас(бұрыш)", right: "Бір түйін нүктесінде қосылған және қосындысы 180 градусқа тең болатын екі бұрыш" }, 
+  { left: "Іргелес(бұрыш)", right: "Бір төбеден шығатын және бір қабырғасы ортақ болатын екі бұрыш" }, 
+  { left: "Қиюшы", right: "Екі немесе одан да көп геометриялық фигураны қиып өтетін сызық немесе кесінді" }, 
+  { left: "Айқыш(бұрыш)", right: "Екі түзудің қиылысуынан пайда болатын қарсы тұрған бұрыштар" }, 
+  { left: "Жанама(жанасу нүктесі)", right: "Шеңбердің жиегі бойымен өтіп тұрған түзу" }, 
+  { left: "Кері сандар", right: "Берілген санмен көбейткенде 1-ге тең болатын сан" }, 
+  { left: "Қарама-қарсы сандар", right: "0-ге қатысты бір-біріне қарсы тұрған сандар" }
+];
+
+// DOM элементтерін алу
+const leftCol = document.getElementById("match-left");
+const rightCol = document.getElementById("match-right");
+
+// Таңдалған элементтер
+let selectedLeft = null;
+let selectedRight = null;
+
+// Жауаптарды кездейсоқ араластыру (сол жақ / оң жақ бөлек)
+const shuffledLeft = matches.map(m=>m.left).sort(()=>Math.random()-0.5);
+const shuffledRight = matches.map(m=>m.right).sort(()=>Math.random()-0.5);
+
+// Сол жақ батырмаларды қосу
+shuffledLeft.forEach(leftText=>{
+    const btn = document.createElement("button");
+    btn.textContent = leftText;
+    btn.onclick = ()=>selectMatch(btn,'left');
+    leftCol.appendChild(btn);
+});
+
+// Оң жақ батырмаларды қосу
+shuffledRight.forEach(rightText=>{
+    const btn = document.createElement("button");
+    btn.textContent = rightText;
+    btn.onclick = ()=>selectMatch(btn,'right');
+    rightCol.appendChild(btn);
+});
+
+// Сәйкестендіру логикасы
+function selectMatch(button, side){
+    if(side==='left') selectedLeft = button;
+    if(side==='right') selectedRight = button;
+
+    if(selectedLeft && selectedRight){
+        const leftText = selectedLeft.textContent;
+        const rightText = selectedRight.textContent;
+
+        // Дұрыс жауапты тек мәтін бойынша тексеру
+        const correct = matches.find(m => m.left === leftText && m.right === rightText);
+
+        if(correct){
+            selectedLeft.style.background = "#a3f7bf";
+            selectedRight.style.background = "#a3f7bf";
+            selectedLeft.disabled = true;
+            selectedRight.disabled = true;
+        } else {
+            selectedLeft.style.background = "#f7a3a3";
+            selectedRight.style.background = "#f7a3a3";
+            setTimeout(()=>{ 
+                selectedLeft.style.background = ""; 
+                selectedRight.style.background = "";
+            },500);
+        }
+
+        selectedLeft = null;
+        selectedRight = null;
+    }
+}
+</script>
+
+
+<!-- ===================== ТЕСТ ===================== -->
+<div id="test-section" class="hidden">
+<h1>📝 Тест</h1>
+
+<div id="class-buttons" style="margin-bottom:15px;">
+  <button onclick="showClass(5)">5 сынып</button>
+  <button onclick="showClass(6)">6 сынып</button>
+  <button onclick="showClass(7)">7 сынып</button>
+  <button onclick="showClass(8)">8 сынып</button>
+  <button onclick="showClass(9)">9 сынып</button>
+  <button onclick="showClass(10)">10 сынып</button>
+  <button onclick="showClass(11)">11 сынып</button>
+</div>
+
+<div id="test-list"></div>
+
+<script>
+/* ===================== ТЕСТТЕР ===================== */
+const classTests = {
+ 5: [
+  {question:"Санның құрамында 10 санынан 1 кем болатын сан қалай аталады?", options:["Ондық","Бірлік","Жүздік","Мыңдық"], answer:1},
+  {question:"Қарапайым сандар дегеніміз?", options:["2-ге бөлінетін сан","3-ке бөлінетін сан","1-ге және өзіне ғана бөлінетін сан","Бүкіл сандар"], answer:2},
+  {question:"Квадраттың қабырғалары қандай?", options:["Барлығы әртүрлі","Тек қарсы қабырғалары тең","Тек диагональдары тең","Барлық қабырғалары тең"], answer:3},
+  {question:"Жай бөлшек дегеніміз не?", options:["Бөлшектің алымы бөлімінен үлкен","Алымы мен бөлімінің тең бөлшек","Сандық бөлшек","Бөлшектің алымы бөлімінен кіші"], answer:3},
+  {question:"Геометриялық фигураның ені мен ұзындығының көбейтіндісі қалай аталады?", options:["Периметр","Диагональ","Аудан","Радиус"], answer:2}
+],
+
+6: [
+  {question:"Натурал сандар дегеніміз?", options:["0 және теріс сандар","1, 2, 3,... сандар","Бөлшек сандар","Ондық сандар"], answer:1},
+  {question:"Бөлшектің кері санын қалай атайды?", options:["Негізгі сан","Кері бөлшек","Жай сан","Бөлшек"], answer:1},
+  {question:"Периметр дегеніміз не?", options:["Фигураның ауданы","Геометриялық фигураның барлық қабырғасының қосындысы","Фигура ш ұзындығы","Фигураның диагоналі"], answer:2},
+  {question:"Үшбұрыштың ішкі бұрыштарының қосындысы нешеге тең?", options:["90°","180°","360°","270°"], answer:1},
+  {question:"Бөлшектерді қосу үшін олардың ...... болуы керек?", options:["Алымдары тең","Бөлімдері тең","Тек натурал сан болуы керек","Бөлшек болуы міндетті емес"], answer:1}
+],
+
+7: [
+  {question:"Айнымалы дегеніміз не?", options:["Функция","Құндылығы өзгеруі мүмкін сан немесе белгі","Тек тұрақты сан","Санның квадраты"], answer:1},
+  {question:"Коэффициент дегеніміз не?", options:["Функцияның графигі","Айнымалының алдындағы сан","Айнымалының өзі","Бөлшектің алымы"], answer:1},
+  {question:"Формула дегеніміз не?", options:["Белгі арқылы өрнекті жазу тәсілі","Сандарды қосу","Фигураның периметрі","Бөлшек"], answer:0},
+  {question:"Параллель түзулерге қисаю арқылы өтетін түзудің теоремасы кімге тән?", options:["Евклид","Пифагор","Архимед","Ньютон"], answer:0},
+  {question:"Түзу арқылы бір нүктеден бір ғана параллель жүргізуге болады деген аксиома қалай аталады?", options:["Пифагор теоремасы","Евклид аксиомасы","Архимед аксиомасы","Ньютон теоремасы"], answer:1}
+],
+
+8: [
+  {question:"Квадраттық теңдеудің стандарт түрі қандай?", options:["ax + b = 0","a² + b² = c²","ax² + bx + c = 0","y = kx + b"], answer:2},
+  {question:"Дискриминант дегеніміз не?", options:["Функцияның графигі","Квадраттық теңдеудің шешімін табуға арналған формула","Бөлшек","Натурал сан"], answer:1},
+  {question:"Квадраттық теңдеудің нақты түбірі бар екендігін көрсететін шарт қандай?", options:["a = 0","b = 0","D ≥ 0","D < 0"], answer:2},
+  {question:"Пифагор теоремасы қандай тригонометриялық функциямен байланысты?", options:["a + b = c","a² - b² = c²","a/b = c","a² + b² = c²"], answer:3},
+  {question:"Үшбұрыштың қабырғаларына қатысты қай аксиома дұрыс?", options:["Барлық қабырғалар әр түрлі","Бір қабырға әрқашан ең кіші","Барлық қабырғалар тең","Үшбұрыштың кез-келген екі қабырғасының қосындысы үшінші қабырғасынан үлкен болады"], answer:3}
+],
+
+9: [
+  {question:"Квардраттық теңдеудің жалпы түрі қалай жазылады?", options:["ax² + bx + c = 0","y = kx² + b","a² + b² = c²","ax + b = 0"], answer:0},
+  {question:"Айнымалыны көбейтетін сан қалай аталады?", options:["Коэффициент","Бөлшек","Функция","Саны"], answer:0},
+  {question:"Формула арқылы өрнектің мәнін есептеу қандай әдіс?", options:["Барлық сандарды қосу","Алынған айнымалыларға мән қою","Санның квадратын алу","Периметрді табу"], answer:1},
+  {question:"Пифагор теоремасы қандай үшбұрышқа қатысты?", options:["Барлық үшбұрыш","Тікбұрышты","Теңбүйірлі","Тең қабырғалы"], answer:1},
+  {question:"Екі параллель түзудің қиылыспайтыны қай аксиомада көрсетілген?", options:["Евклид аксиомасы","Пифагор теоремасы","Архимед аксиомасы","Ньютон аксиомасы"], answer:0}
+],
+
+10: [
+  {question:"Функция дегеніміз не?", options:["Барлық айнымалыларға әртүрлі мән","Бір айнымалыға бір ғана мән сәйкес келетін заңдылық","Фигура","Бөлшек"], answer:1},
+  {question:"Квадраттық функцияның графигі қандай пішінде болады?", options:["Сызық","Парабола","Шеңбер","Эллипс"], answer:1},
+  {question:"Айнымалының мәні өзгергенде функция мәні қалай өзгереді?", options:["Барлық мәндер нөлге тең","Функция өзгеруі мүмкін","Тұрақты қалады","Функция әрқашан өседі"], answer:1},
+  {question:"Диагональ дегеніміз не?", options:["Фигураның ауданы","Фигураның периметрі","Фигураның қабырғасы","Тікбұрышты немесе көпбұрышты фигураның қарама-қарсы төбелерін қосатын кесінді"], answer:3},
+  {question:"Параллелограммның қарама-қарсы қабырғалары қандай?", options:["Ұзын","Әрқашан 90°","Тең","Қысқа"], answer:2}
+],
+
+11: [
+  {question:"Логарифм дегеніміз не?", options:["Бөлшек","белгілі бір санды қандай дәрежеге көтеру керек екенін көрсететін көрсеткіш","Квадрат","Функция"], answer:1},
+  {question:"Экспоненциалдық функция қандай негізге ие?", options:["Теріс сан","Позитив сан","Нөл","Барлық сан"], answer:1},
+  {question:"Айнымалыны алып тастағаннан кейінгі өрнек қалай аталады?", options:["Коэффициент","Сандық мән","Функция","Бөлшек"], answer:1},
+  {question:"Кез келген үшбұрыштың қабырғаларына қатысты қандай теорема бар?", options:["Пифагор теоремасы","Косинустар теоремасы","Үшбұрыш теңсіздігі","Синустар теоремасы"], answer:2},
+  {question:"Параллелограммның диагональдары қандай?", options:["Бір-біріне перпендикуляр емес","Бір-бірін ортасынан қақ бөледі","Тең емес","Квадратқа тең"], answer:1}
+  ]
+};
+
+function showClass(cls){
+  const testList = document.getElementById("test-list");
+  testList.innerHTML = "";
+  const tests = classTests[cls];
+  tests.forEach((t,index)=>{
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `<b>${index+1}. ${t.question}</b><br>`;
+    t.options.forEach((opt,i)=>{
+      const btn = document.createElement("button");
+      btn.className = "test-option";
+      btn.textContent = opt;
+      btn.onclick=()=>{
+        if(i===t.answer) btn.style.background="#a3f7bf";
+        else btn.style.background="#f7a3a3";
+        Array.from(div.getElementsByTagName("button")).forEach(b=>b.disabled=true);
+      };
+      div.appendChild(btn);
+    });
+    testList.appendChild(div);
+  });
+}
+
+showClass(5);
+</script>
+</div>
+
+<script>
+function showSection(section){
+    document.getElementById('dict-section').classList.add('hidden');
+    document.getElementById('match-section').classList.add('hidden');
+    document.getElementById('test-section').classList.add('hidden');
+    document.getElementById(section+'-section').classList.remove('hidden');
+}
+</script>
+
+</div>
+</body>
+</html>
